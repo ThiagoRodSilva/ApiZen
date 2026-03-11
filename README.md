@@ -14,21 +14,6 @@ Uma biblioteca Python moderna, leve e resiliente para simplificar a interação 
 
 ---
 
-## 📦 Instalação
-
-### Instalação em modo desenvolvimento/local
-Para testar a biblioteca localmente no seu ambiente virtual:
-
-```bash
-# Ative seu venv primeiro
-.\.venv\Scripts\Activate.ps1
-
-# Instale em modo editável
-pip install -e .
-```
-
----
-
 ## 🚀 Como Usar
 
 ### 1. Uso Básico (Rápido)
