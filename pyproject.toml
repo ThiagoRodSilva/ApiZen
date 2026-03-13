@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/thiago/minha_biblioteca"
+"Homepage" = "https://github.com/ThiagoRodSilva/ApiZen"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/api_zen"]
