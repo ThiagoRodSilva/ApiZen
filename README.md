@@ -1,92 +1,117 @@
-# ApiZen 🚀
+# 🧘 ApiZen
 
-Uma biblioteca Python moderna, leve e resiliente para simplificar a interação com APIs REST. Esqueça a configuração manual de retentativas, timeouts e headers de autenticação toda vez que for iniciar um novo projeto.
+[![PyPI version](https://img.shields.io/pypi/v/api-zen.svg)](https://pypi.org/project/api-zen/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
----
-
-## ✨ Principais Recursos
-
-- **Resiliência Integrada**: Retentativas automáticas (retries) para erros comuns de servidor (500, 502, 503, 504) e rate limit (429).
-- **Logging Automático**: Feedback em tempo real no terminal sobre URLs chamadas, métodos, status de resposta e tempo de execução.
-- **Sessões Persistentes**: Utiliza `requests.Session()` internamente para melhor performance.
-- **Autenticação Simplificada**: Configure tokens Bearer ou outros esquemas com um único comando.
-- **Tratamento de Erros**: Lança exceções automaticamente (`raise_for_status()`) para respostas de erro.
+**ApiZen** é uma biblioteca Python moderna, leve e resiliente projetada para tornar a interação com APIs REST o mais simples possível. Inspirada na filosofia Zen, ela elimina o "boilerplate" e foca na clareza e robustez.
 
 ---
 
-## 🚀 Como Usar
+## ✨ Funcionalidades
 
-### 1. Uso Básico (Rápido)
-Para uma chamada única e rápida sem configurações:
+- 🚀 **Sync & Async**: Suporte nativo para requisições síncronas (`requests`) e assíncronas (`httpx`).
+- 🛡️ **Exceções Customizadas**: Hierarquia de erros clara para facilitar o tratamento de falhas.
+- 🔄 **Resiliência Integrada**: Retentativas automáticas inteligentes (Exponential Backoff) com `tenacity`.
+- 🔑 **Auth Facilitado**: Helpers para tokens dinâmicos.
+- 📝 **Logging Transparente**: Acompanhe o que acontece em cada requisição.
+- ⚡ **Zero Config**: Comece com uma linha de código, mas configure tudo se precisar.
+
+---
+
+## 📦 Instalação
+
+```bash
+pip install api-zen
+```
+
+---
+
+## 🛠️ Como Usar
+
+### 1. Requisição Rápida (Estilo Zen)
+Para algo rápido, você nem precisa instanciar uma classe:
 
 ```python
 from api_zen import request_api
 
-data = request_api("https://api.github.com")
-print(data)
+data = request_api("https://jsonplaceholder.typicode.com/posts/1")
+print(data['title'])
 ```
 
-### 2. Uso Profissional (ApiZen)
-Recomendado para projetos que interagem com uma API específica:
+### 2. Uso Síncrono (Recomendado para Scripts)
 
 ```python
 from api_zen import ApiZen
 
-# Configura o cliente uma única vez
-api = ApiZen(
-    base_url="https://api.exemplo.com", # URL base para todos os endpoints
-    timeout=10,                        # Tempo limite de espera (segundos)
-    max_retries=3                      # Número de tentativas em caso de erro
-)
+# Configure uma base URL e headers padrão
+api = ApiZen(base_url="https://api.exemplo.com", timeout=5)
+api.set_token("seu-token-aqui")
 
-# Configura autenticação Bearer
-api.set_token("seu_token_aqui")
+# GET
+users = api.get("/users", params={"active": "true"})
 
-# Faz a chamada e recebe o JSON já convertido
-usuarios = api.get("usuarios") 
+# POST
+new_user = api.post("/users", json={"name": "Thiago", "role": "Dev"})
+
+# Outros métodos: put(), patch(), delete(), head(), options()
 ```
 
-### 3. Métodos Suportados
-A classe `ApiZen` suporta os principais verbos HTTP:
+### 3. Uso Assíncrono (Para Performance Máxima)
 
 ```python
-api.get("endpoint", params={"id": 1})
-api.post("endpoint", json={"nome": "Thiago"})
-api.put("endpoint", json={"status": "ativo"})
-api.delete("endpoint")
+import asyncio
+from api_zen import AsyncApiZen
+
+async def main():
+    api = AsyncApiZen(base_url="https://jsonplaceholder.typicode.com")
+    
+    # Executa várias requisições concorrentemente
+    tasks = [api.get(f"/posts/{i}") for i in range(1, 5)]
+    results = await asyncio.gather(*tasks)
+    
+    for post in results:
+        print(post['title'])
+
+asyncio.run(main())
 ```
 
 ---
 
-## 🛠️ Estrutura do Projeto
+## 🚨 Tratamento de Erros
 
-```text
-api-zen/
-├── pyproject.toml      # Configurações de build e dependências
-├── README.md           # Esta documentação
-├── src/
-│   └── api_zen/        # Corrigido: underscore para importação
-│       ├── __init__.py  # Exportação da API pública
-│       └── core.py      # Lógica robusta com ApiZen
-└── tests/
-    └── verify_install.py # Script de teste rápido
+A ApiZen fornece exceções específicas para que seu código seja mais previsível:
+
+```python
+from api_zen import ApiZen, ApiZenHttpError, ApiZenError
+
+api = ApiZen()
+
+try:
+    data = api.get("https://api.exemplo.com/recurso-inexistente")
+except ApiZenHttpError as e:
+    print(f"Erro HTTP {e.status_code}: {e.response_data}")
+except ApiZenError as e:
+    print(f"Erro de conexão ou timeout: {e}")
 ```
 
 ---
 
-## 📖 Dependências
+## ⚙️ Configuração de Resiliência
 
-- `requests`: A base sólida para comunicações HTTP.
-- `urllib3`: Gerenciamento avançado de retentativas.
+Por padrão, a ApiZen tenta realizar até **3 tentativas** com um intervalo exponencial se encontrar erros de rede ou timeouts. Você pode customizar isso na inicialização:
+
+```python
+api = ApiZen(max_retries=5, timeout=15)
+```
 
 ---
 
-## 🤝 Contribuindo
+## 🤝 Contribuição
 
-Sinta-se à vontade para sugerir melhorias ou abrir issues! Esta biblioteca foi criada para ser o ponto de partida ideal para qualquer integração de API em Python.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir Issues ou Pull Requests no repositório oficial.
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob a licença [MIT](LICENSE).
+Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
