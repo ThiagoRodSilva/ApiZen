@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "api-zen"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
   { name="Thiago", email="trodriguessilva.dev@gmail.com" },
 ]
